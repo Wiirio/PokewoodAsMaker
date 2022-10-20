@@ -1,0 +1,79 @@
+body {
+	background-color: black;
+	color: white;
+	font-family: sans-serif;
+	margin: 0;
+}
+#pw_as_container {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+#pw_header {
+	font-size: 50px;
+	display: flex;
+	justify-content: center;
+	padding-block: 0.5em;
+	padding-inline: 0.5em;
+	font-weight: bold;
+	max-height: 2em;
+}
+#pw_header > span {
+	flex: 1;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+#pw_header_contenteditable img {
+	max-height: 100%;
+}
+#grid {
+	flex: 1;
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	overflow: hidden;
+	border-top: solid 5px;
+	padding-bottom: 0.3em;
+}
+.pokewood-member {
+	overflow: auto;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	border-right: solid 5px;
+	padding-top: 0.3em;
+	padding-right: 0.3em;
+}
+.pokewood-member:nth-child(6n) {
+	border: none;
+}
+.member-filling {
+	height: 100%;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+	font-size: 1.5em;
+	word-break: break-word;
+}
+.member-filling > iframe, .member-filling > img {
+	flex: 1;
+	height: 0;
+}
+.member-filling > img {
+	max-width: 95%;
+	max-height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	object-fit: contain;
+}
+.member-equal {
+	font-size: 40px;
+	font-weight: bold;
+	padding-right: 0.2em;
+}
+.pokewood-member > img {
+	max-height: 100%;
+}
