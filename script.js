@@ -1,12 +1,47 @@
 members = [
-	'echap',    'sullsun',  'sassa',    'lili',     'virgil',   'wiirio',
-	'victor',   'enzoul',   'mako',     'kult',     'gladio',   'maxx',
-	'fox',      'reo',      'naat',     'nosarms',  'megaman',  'zaussa',
-	'napsta',   'nae',      'pirnic',   'ink',      'nyaxyan',  'akame',
-	'math',     'pande',    'picpic',   'gozmo',    'pepino',   'dako',
-	'tobias',   'emi',      'maxime',   'blo',      'kracksi',  'snubby',
-	'sandy',    'shawny',   'daishi',   'nelson',   'lampi',    'melissa'                
-];
+	{ "code": "echap" },
+	{ "code": "sullsun" },
+	{ "code": "sassa" },
+	{ "code": "lili" },     
+	{ "code": "virgil" },
+	{ "code": "wiirio" },
+	{ "code": "victor" },   
+	{ "code": "enzoul" },
+	{ "code": "mako" },
+	{ "code": "kult" },
+	{ "code": "gladio" },
+	{ "code": "maxx" },
+	{ "code": "fox" },
+	{ "code": "reo" },
+	{ "code": "naat" },
+	{ "code": "nosarms" },
+	{ "code": "megaman" },
+	{ "code": "zaussa" },
+	{ "code": "napsta" },
+	{ "code": "nae" },
+	{ "code": "pirnic" },
+	{ "code": "ink" },
+	{ "code": "nyaxyan" },
+	{ "code": "akame" },
+	{ "code": "math" },
+	{ "code": "pande" },
+	{ "code": "picpic" },
+	{ "code": "gozmo" },
+	{ "code": "pepino" },
+	{ "code": "dako" },
+	{ "code": "tobias" },
+	{ "code": "emi" },
+	{ "code": "maxime" },
+	{ "code": "blo" },
+	{ "code": "kracksi" },
+	{ "code": "snubby" },
+	{ "code": "sandy" },
+	{ "code": "shawny" },
+	{ "code": "daishi" },
+	{ "code": "nelson" },
+	{ "code": "lampi" },
+	{ "code": "melissa" }                
+]
 
 function onImagePasted(e) {
 	if (!e.clipboardData || !e.clipboardData.items)
@@ -26,10 +61,10 @@ function onImagePasted(e) {
 	}
 }
 
-function renderMemberElement(code, displayEqual = true, contentEditable = true) {
+function renderMemberElement(member, displayEqual = true, contentEditable = true) {
 	const $member = document.createElement('div');
 	$member.classList += 'pokewood-member';
-	$member.setAttribute('code', code);
+	$member.setAttribute('code', member.code);
 
 	const $filling = document.createElement('div');
 	$filling.classList += 'member-filling';
@@ -47,8 +82,8 @@ function renderMemberElement(code, displayEqual = true, contentEditable = true) 
 	}
 
 	const $avatar = document.createElement('img');
-	$avatar.setAttribute('src', `./images/${code}.png`);
-	$avatar.setAttribute('alt', code);
+	$avatar.setAttribute('src', `./images/${member.code}.png`);
+	$avatar.setAttribute('alt', member.code);
 	$member.append($avatar);
 
 	return $member;
@@ -57,10 +92,11 @@ function renderMemberElement(code, displayEqual = true, contentEditable = true) 
 function init() {
 	const $grid = document.getElementById('grid');
 
+	document.getElementById('pw_header_contenteditable')
+		.addEventListener('paste', (e) => onImagePasted(e));
+
 	for (let member of members)
 		$grid.append(renderMemberElement(member));
-
-	document.getElementById('pw_header_contenteditable').addEventListener('paste', (e) => onImagePasted(e));
 }
 
 window.addEventListener('load', (e) => init());
