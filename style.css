@@ -14,10 +14,11 @@ body {
 	font-size: 50px;
 	display: flex;
 	justify-content: center;
-	padding-block: 0.5em;
+	padding-block: 0em;
 	padding-inline: 0.5em;
 	font-weight: bold;
 	max-height: 2em;
+	height: 2em;
 }
 #pw_header > span {
 	flex: 1;
@@ -26,7 +27,11 @@ body {
 	justify-content: center;
 	align-items: center;
 }
-#pw_header_contenteditable img {
+#pw_header > #pw_header_editor > .editor_container {
+	width: 100%;
+	height: 100%;
+}
+#pw_header_editor img {
 	max-height: 100%;
 }
 #grid {
@@ -49,25 +54,26 @@ body {
 .pokewood-member:nth-child(6n) {
 	border: none;
 }
-.editor_container {
-	height: 100%;
+.pokewood-member > .editor_container {
 	flex: 1;
+	height: 100%;
+	overflow: hidden;
+	font-size: 30px;
 }
-.editor_container > .member-filling {
+.editor_container > * {
 	width: 100%;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	text-align: center;
-	font-size: 1.5em;
 	word-break: break-word;
 }
-.member-filling > iframe, .member-filling > img {
+.authoring_control > iframe, .authoring_control > img {
 	flex: 1;
 	height: 0;
 }
-.member-filling > img {
+.authoring_control > img {
 	max-width: 95%;
 	max-height: 100%;
 	margin-left: auto;
@@ -84,10 +90,15 @@ body {
 }
 
 .context_menu {
-	display: none;
-	border: solid grey 3px;
+	border: solid grey 1.5px;
 	background-color: darkslategray;
 	position: absolute;
 	top: 10px;
 	left: 10px;
+	border-radius: 0.2em;
+	padding: 0.5em;
+}
+
+[hidden] {
+	display: none !important;
 }

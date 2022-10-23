@@ -1,11 +1,159 @@
-class MemberControl {
-	#editMode = undefined;
+class EditorControl {
+	#editMode = 'authoring';
 	get EditMode() { return this.#editMode; }
-	set EditMode(value) {
+	set EditMode(value) { 
 		this.#editMode = value;
+		this.authoringControl.$control.hidden = this.EditMode != 'authoring';
+		this.canvasControl.$control.hidden = this.EditMode != 'canvas';
+	}
 
-		this.$authoring.style.display = this.#editMode == 'authoring' ? 'flex' : 'none';
-		this.$canvas.style.display = this.#editMode == 'canvas' ? 'block' : 'none';
+	constructor() {
+		this.authoringControl = new AuthoringControl();
+		this.canvasControl = new CanvasControl();
+
+		this.$control = document.createElement('div');
+		this.$control.classList.add('editor_container');
+		this.$control.append(this.authoringControl.$control);
+		this.$control.append(this.canvasControl.$control);
+
+		// Member context menu
+		this.$control.addEventListener('contextmenu', (e) => {
+			let oldLastRightClick = lastRightClick;
+			lastRightClick = e.timeStamp;
+			if (!oldLastRightClick || lastRightClick > oldLastRightClick + 500)
+				return;
+
+			e.preventDefault();
+
+			$contextMenu.innerHTML = '';
+			$contextMenu.append(this.ContextMenuControl);
+
+			$contextMenu.hidden = false;
+			$contextMenu.style.left = e.clientX;
+			$contextMenu.style.top = e.clientY - $contextMenu.clientHeight - 3;
+		});
+
+		this.EditMode = 'authoring';
+	}
+
+	get ContextMenuControl() {
+		let $container = document.createElement('div');
+		$container.classList.add('EditorControlContextMenu');
+
+		let $selEditMode = document.createElement('select');
+		for (let editMode of ['authoring', 'canvas']) {
+			let $option = document.createElement('option');
+			$option.value = editMode;
+			$option.innerText = editMode;
+			$option.selected = $option.value == this.EditMode;
+			$selEditMode.append($option);
+		}
+
+		this.canvasControlContextMenuControl = this.canvasControl.ContextMenuControl;
+		this.canvasControlContextMenuControl.hidden = this.EditMode != 'canvas'
+
+		$selEditMode.addEventListener('change', (e) => { 
+			this.EditMode = e.target.value;
+			this.canvasControlContextMenuControl.hidden = this.EditMode != 'canvas';
+		});
+
+		$container.append(
+			$selEditMode,
+			this.canvasControlContextMenuControl);
+		return $container;
+	}
+}
+
+class AuthoringControl {
+	constructor() {
+		this.$control = document.createElement('div');
+		this.$control.classList.add('editor', 'authoring_control');
+		this.$control.setAttribute('contenteditable', true);
+		this.$control.addEventListener('paste', (e) => onImagePasted(e));
+	}
+}
+
+class CanvasControl {
+	drawHistory = [];
+	lastDraw = [];
+
+	drawingX = undefined;
+	drawingY = undefined;
+
+	color = '#FFFFFF';
+	get Color() { return this.color; }
+	set Color(value) { this.color = value; }
+
+	executeDraw(args) {
+		var fnName = args[0];
+		var fnArgs = Array.prototype.slice.call(args, 1);
+		this[fnName].apply(this, fnArgs);
+	}
+	draw() {
+		this.lastDraw.push(arguments);
+		this.executeDraw(arguments);
+	}
+	undraw() {
+		this.$control.getContext('2d').clearRect(0, 0, this.$control.width, this.$control.height);
+		this.drawHistory.pop();
+		for (let draw of this.drawHistory)
+			for (let drawCommand of draw)
+				this.executeDraw(drawCommand);
+	}
+	line(color, lineWidth, x1, y1, x2, y2) {
+		let ctx = this.$control.getContext('2d');
+		ctx.strokeStyle = color;
+		ctx.lineWidth = lineWidth;
+		ctx.beginPath();
+		ctx.moveTo(x1, y1);
+		ctx.lineTo(x2, y2);
+		ctx.stroke();
+		ctx.closePath();
+	};
+
+	constructor() {
+		const me = this;
+		this.$control = document.createElement('canvas');
+		this.$control.classList.add('editor', 'canvas_control');
+		this.$control.setAttribute('tabindex', 0);
+
+		this.$control.addEventListener('mousedown', (e) => e.target.focus());
+		this.$control.addEventListener('mousemove', (e) => {
+			if (!mouseDown) {
+				if (me.lastDraw.length > 0) {
+					me.drawHistory.push(me.lastDraw);
+					me.lastDraw = [];
+				}
+				return;
+			}
+			let mouseX = ((e.clientX - e.target.offsetLeft) / e.target.clientWidth) * e.target.width;
+			let mouseY = ((e.clientY - e.target.offsetTop) / e.target.clientHeight) * e.target.height;
+			me.draw('line', me.color, 3, me.drawingX || mouseX, me.drawingY || mouseY, me.drawingX = mouseX, me.drawingY = mouseY);
+		});
+		this.$control.addEventListener('mouseup', (e) => { me.drawingX = me.drawingY = undefined; });
+		this.$control.addEventListener('mouseleave', (e) => { me.drawingX = me.drawingY = undefined; });
+		this.$control.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key == 'z') me.undraw(); });
+	}
+	get ContextMenuControl() {
+		let $container = document.createElement('div');
+		$container.classList.add('CanvasControlContextMenu');
+
+		let $selColor = document.createElement('input');
+		$selColor.setAttribute('type', 'color');
+		$selColor.value = this.Color;
+		$selColor.addEventListener('change', (e) => this.Color = e.target.value);
+		$container.append($selColor);
+
+		return $container;
+	}
+}
+
+class MemberControl {
+	#showEqual = true;
+	get ShowEqual() { return this.#showEqual; }
+	set ShowEqual(value) {
+		this.#showEqual = value;
+		this.$equal.hidden = !this.ShowEqual;
 	}
 
 	constructor(member) {
@@ -15,43 +163,21 @@ class MemberControl {
 		this.$control.classList += 'pokewood-member';
 		this.$control.setAttribute('code', member.code);
 	
-		let $editorContainer = document.createElement('div');
-		$editorContainer.classList += 'editor_container';
+		this.editorControl = new EditorControl();
 
-		this.$authoring = document.createElement('div');
-		this.$authoring.classList += 'member-filling';
-		this.$authoring.setAttribute('contenteditable', true);
-		this.$authoring.addEventListener('paste', (e) => onImagePasted(e));
-
-		this.$canvas = newCanvas(member.id);
-		this.$canvas.classList += 'member-filling';
-		this.$canvas.setAttribute('tabindex', 0);
-	
-		const $equal = document.createElement('span');
-		$equal.classList += 'member-equal';
-		$equal.innerText = '=';
+		this.$equal = document.createElement('span');
+		this.$equal.classList.add('member-equal');
+		this.$equal.innerText = '=';
 	
 		const $avatar = document.createElement('img');
 		$avatar.setAttribute('src', `./images/${member.code}.png`);
 		$avatar.setAttribute('alt', member.code);
 
-		this.$control.append($editorContainer);
-		$editorContainer.append(this.$authoring);
-		$editorContainer.append(this.$canvas);
-		this.$control.append($equal);
+		this.$control.append(this.editorControl.$control);
+		this.$control.append(this.$equal);
 		this.$control.append($avatar);
 
-		// Member context menu
-		this.$control.addEventListener('contextmenu', (e) => {
-			e.preventDefault();
-			$contextMenu.style.display = 'block';
-			$contextMenu.style.left = e.clientX;
-			$contextMenu.style.top = e.clientY - $contextMenu.clientHeight - 3;
-	
-			$contextMenu.setMember(me);
-		});
-
-		this.EditMode = 'authoring';
+		this.ShowEqual = this.ShowEqual;
 	}
 }
 
@@ -103,6 +229,7 @@ members = [
 mouseDown = false;
 document.addEventListener('mouseup', (e) => mouseDown = false);
 document.addEventListener('mousedown', (e) => mouseDown = true);
+lastRightClick = undefined;
 
 function onImagePasted(e) {
 	if (!e.clipboardData || !e.clipboardData.items)
@@ -122,98 +249,25 @@ function onImagePasted(e) {
 	}
 }
 
-function newCanvas() {
-	var $canvas = document.createElement('canvas');
-	$canvas.drawHistory = [];
-	$canvas.lastDraw = [];
-	$canvas.draw = function() {
-		this.lastDraw.push(arguments);
-		this.executeDraw(arguments);
-	};
-	$canvas.executeDraw = function(args) {
-		var fnName = args[0];
-		var fnArgs = Array.prototype.slice.call(args, 1);
-		this[fnName].apply(this, fnArgs);
-	}
-	$canvas.undraw = function() {
-		this.getContext('2d').clearRect(0, 0, this.width, this.height);
-		this.drawHistory.pop();
-		for (let draw of this.drawHistory)
-			for (let drawCommand of draw)
-				this.executeDraw(drawCommand);
-	};
-	$canvas.line = function(color, lineWidth, x1, y1, x2, y2) {
-		let ctx = this.getContext('2d');
-		ctx.strokeStyle = color;
-		ctx.lineWidth = lineWidth;
-		ctx.beginPath();
-		ctx.moveTo(x1, y1);
-		ctx.lineTo(x2, y2);
-		ctx.stroke();
-		ctx.closePath();
-	};
-	$canvas.addEventListener('mousedown', (e) => e.target.focus());
-	$canvas.addEventListener('mousemove', (e) => {
-		if (!mouseDown) {
-			if (e.target.lastDraw.length > 0) {
-				e.target.drawHistory.push(e.target.lastDraw);
-				e.target.lastDraw = [];
-			}
-			return;
-		}
-		let mouseX = ((e.clientX - e.target.offsetLeft) / e.target.clientWidth) * e.target.width;
-		let mouseY = ((e.clientY - e.target.offsetTop) / e.target.clientHeight) * e.target.height;
-		e.target.draw(
-			'line',
-			'green',
-			3,
-			e.target.drawingX || mouseX, 
-			e.target.drawingY || mouseY,
-			e.target.drawingX = mouseX,
-			e.target.drawingY = mouseY);
-	});
-	$canvas.addEventListener('mouseup', (e) => { 
-		e.target.drawingX = undefined;
-		e.target.drawingY = undefined;
-	});
-	$canvas.addEventListener('mouseleave', (e) => { 
-		e.target.drawingX = undefined;
-		e.target.drawingY = undefined;
-	});
-	$canvas.addEventListener('keydown', (e) => {
-		if (e.ctrlKey && e.key == 'z')
-			$canvas.undraw();
-	});
-	return $canvas;
-}
-
 function init() {
+	const $headerEditor = document.getElementById('pw_header_editor');
+	$headerEditor.append(new EditorControl().$control);
+
 	const $grid = document.getElementById('grid');
 
 	initMemberContextMenu();
-
-	document.getElementById('pw_header_contenteditable').addEventListener('paste', (e) => onImagePasted(e));
 
 	for (let member of members)
 		$grid.append(new MemberControl(member).$control);
 }
 
 function initMemberContextMenu() {
-	$contextMenu = document.getElementById('member_context_menu');
-	$contextMenu.setMember = function(memberControl) {
-		$contextMenu.memberControl = memberControl;
-		document.member_context_menu.edit_mode.value = memberControl.EditMode;
-	}
-
-	document.getElementById('authoring').addEventListener('change', function(e) {
-		$contextMenu.memberControl.EditMode = document.member_context_menu.edit_mode.value; 
-	});
-	document.getElementById('canvas').addEventListener('change', function(e) {
-		$contextMenu.memberControl.EditMode = document.member_context_menu.edit_mode.value; 
-	});
-
-	window.addEventListener('click', (e) => $contextMenu.style.display = 'none');
-	$contextMenu.addEventListener('click', (e) => e.stopPropagation());
+	$contextMenu = document.createElement('div');
+	$contextMenu.classList.add('context_menu');
+	$contextMenu.hidden = true;
+	document.body.append($contextMenu);
+	window.addEventListener('mousedown', (e) => $contextMenu.hidden = true);
+	$contextMenu.addEventListener('mousedown', (e) => e.stopPropagation());
 }
 
 window.addEventListener('load', (e) => init());
