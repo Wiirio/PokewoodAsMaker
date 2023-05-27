@@ -152,6 +152,8 @@ class MemberControl {
 	#showEqual = true;
 	get ShowEqual() { return this.#showEqual; }
 	set ShowEqual(value) {
+		if (!this.$equal)
+			return;
 		this.#showEqual = value;
 		this.$equal.hidden = !this.ShowEqual;
 	}
@@ -164,31 +166,34 @@ class MemberControl {
 		this.$control.setAttribute('code', member.code);
 	
 		this.editorControl = new EditorControl();
-
-		this.$equal = document.createElement('span');
-		this.$equal.classList.add('member-equal');
-		this.$equal.innerText = '=';
-	
-		const $avatar = document.createElement('img');
-		$avatar.setAttribute('src', `./images/${member.code}.png`);
-		$avatar.setAttribute('alt', member.code);
-
 		this.$control.append(this.editorControl.$control);
-		this.$control.append(this.$equal);
-		this.$control.append($avatar);
 
-		this.ShowEqual = this.ShowEqual;
+		if (!!member.code) {
+			this.$equal = document.createElement('span');
+			this.$equal.classList.add('member-equal');
+			this.$equal.innerText = '=';
+		
+			const $avatar = document.createElement('img');
+			$avatar.setAttribute('src', `./images/${member.code}.png`);
+			$avatar.setAttribute('alt', member.code);
+
+			this.$control.append(this.$equal);
+			this.$control.append($avatar);
+
+			this.ShowEqual = this.ShowEqual;
+		}
 	}
 }
 
 members = [
-	{ code: 'echap' },		{ code: 'sullsun' },	{ code: 'sassa' },		{ code: 'lili' },    	{ code: 'virgil' },		{ code: 'wiirio' },		
-	{ code: 'victor' }, 	{ code: 'enzoul' },		{ code: 'mako' },		{ code: 'kult' },		{ code: 'gladio' },		{ code: 'maxx' },
-	{ code: 'fox' },		{ code: 'reo' },		{ code: 'naat' },		{ code: 'hype' },		{ code: 'megaman' },	{ code: 'zaussa' },
-	{ code: 'napsta' },		{ code: 'nae' },		{ code: 'pirnic' },		{ code: 'ink' },		{ code: 'nyaxyan' },	{ code: 'akame' },
-	{ code: 'math' },		{ code: 'pande' },		{ code: 'picpic' },		{ code: 'gozmo' },		{ code: 'pepino' },		{ code: 'dako' },
-	{ code: 'tobias' },		{ code: 'emi' },		{ code: 'maxime' },		{ code: 'blo' },		{ code: 'kracksi' },	{ code: 'snubby' },
-	{ code: 'sandy' },		{ code: 'shawny' },		{ code: 'daishi' },		{ code: 'nelson' },		{ code: 'akira' },		{ code: 'melissa' }
+	{ code: 'echap' },		{ code: 'sullsun' },	{ code: 'sassa' },		{ code: 'lili' },    	{ code: 'virgil' },
+	{ code: 'wiirio' },		{ code: 'victor' }, 	{ code: 'enzoul' },		{ code: 'mako' },		{ code: 'kult' },
+	{ code: 'gladio' },		{ code: 'maxx' },		{ code: 'fox' },		{ code: 'reo' },		{ code: 'naat' },
+	{ code: 'hype' },		{ code: 'megaman' },	{ code: 'zaussa' },		{ code: 'nae' },		{ code: 'pirnic' },
+	{ code: 'ink' },		{ code: 'nyaxyan' },	{ code: 'akame' }, 		{ code: 'pande' },		{ code: 'picpic' },		
+	{ code: 'gozmo' },		{ code: 'pepino' },		{ code: 'dako' },		{ code: 'tobias' },		{ code: 'emi' },
+	{ code: 'maxime' },		{ code: 'blo' },		{ code: 'kracksi' },	{ code: 'snubby' },		{ code: 'sandy' },
+	{ code: 'shawny' },		{ code: 'daishi' },		{ code: 'akira' },		{ code: 'melissa' },	{ code: 'pokewood' }
 ]
 
 mouseDown = false;

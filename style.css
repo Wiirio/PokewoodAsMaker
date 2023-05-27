@@ -37,7 +37,7 @@ body {
 #grid {
 	flex: 1;
 	display: grid;
-	grid-template-columns: repeat(6, 1fr);
+	grid-template-columns: repeat(5, 1fr);
 	overflow: hidden;
 	border-top: solid 5px;
 	padding-bottom: 0.3em;
@@ -48,10 +48,10 @@ body {
 	justify-content: flex-end;
 	align-items: center;
 	border-right: solid 5px;
-	padding-top: 0.3em;
-	padding-right: 0.3em;
+	padding-top: 0.2em;
+	padding-right: 0.2em;
 }
-.pokewood-member:nth-child(6n) {
+.pokewood-member:nth-child(5n) {
 	border: none;
 }
 .pokewood-member > .editor_container {
