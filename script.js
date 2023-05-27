@@ -152,8 +152,6 @@ class MemberControl {
 	#showEqual = true;
 	get ShowEqual() { return this.#showEqual; }
 	set ShowEqual(value) {
-		if (!this.$equal)
-			return;
 		this.#showEqual = value;
 		this.$equal.hidden = !this.ShowEqual;
 	}
@@ -166,22 +164,20 @@ class MemberControl {
 		this.$control.setAttribute('code', member.code);
 	
 		this.editorControl = new EditorControl();
+
+		this.$equal = document.createElement('span');
+		this.$equal.classList.add('member-equal');
+		this.$equal.innerText = '=';
+	
+		const $avatar = document.createElement('img');
+		$avatar.setAttribute('src', `./images/${member.code}.png`);
+		$avatar.setAttribute('alt', member.code);
+
 		this.$control.append(this.editorControl.$control);
+		this.$control.append(this.$equal);
+		this.$control.append($avatar);
 
-		if (!!member.code) {
-			this.$equal = document.createElement('span');
-			this.$equal.classList.add('member-equal');
-			this.$equal.innerText = '=';
-		
-			const $avatar = document.createElement('img');
-			$avatar.setAttribute('src', `./images/${member.code}.png`);
-			$avatar.setAttribute('alt', member.code);
-
-			this.$control.append(this.$equal);
-			this.$control.append($avatar);
-
-			this.ShowEqual = this.ShowEqual;
-		}
+		this.ShowEqual = this.ShowEqual;
 	}
 }
 
