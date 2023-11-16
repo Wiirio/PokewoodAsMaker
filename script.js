@@ -189,12 +189,12 @@ members = [
 	{ code: 'ink' },		{ code: 'nyaxyan' },	{ code: 'akame' }, 		{ code: 'pande' },		{ code: 'picpic' },		
 	{ code: 'gozmo' },		{ code: 'pepino' },		{ code: 'dako' },		{ code: 'tobias' },		{ code: 'emi' },
 	{ code: 'maxime' },		{ code: 'blo' },		{ code: 'kracksi' },	{ code: 'snubby' },		{ code: 'sandy' },
-	{ code: 'shawny' },		{ code: 'daishi' },		{ code: 'akira' },		{ code: 'melissa' },	{ code: 'pokewood' }
+	{ code: 'shawny' },		{ code: 'daishi' },		{ code: 'akira' },		{ code: 'melissa' },	{ code: 'gracidee' }
 ]
 
 mouseDown = false;
-document.addEventListener('mouseup', (e) => mouseDown = false);
-document.addEventListener('mousedown', (e) => mouseDown = true);
+document.addEventListener('mouseup', () => mouseDown = false);
+document.addEventListener('mousedown', () => mouseDown = true);
 lastRightClick = undefined;
 
 function onImagePasted(e) {
@@ -209,7 +209,6 @@ function onImagePasted(e) {
 		var pastedImage = new Image();
 		pastedImage.src = source;
 		e.currentTarget.innerHTML += pastedImage.outerHTML;
-
 		e.preventDefault();
 		return;
 	}
