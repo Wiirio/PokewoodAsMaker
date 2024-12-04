@@ -188,7 +188,7 @@ members = [
 	{ code: 'hype' },		{ code: 'megaman' },	{ code: 'zaussa' },		{ code: 'nae' },		{ code: 'pirnic' },
 	{ code: 'ink' },		{ code: 'nyaxyan' },	{ code: 'akame' }, 		{ code: 'pande' },		{ code: 'picpic' },		
 	{ code: 'gozmo' },		{ code: 'pepino' },		{ code: 'dako' },		{ code: 'tobias' },		{ code: 'emi' },
-	{ code: 'maxime' },		{ code: 'blo' },		{ code: 'kracksi' },	{ code: 'snubby' },		{ code: 'sandy' },
+	{ code: 'maxime' },		{ code: 'mae' },		{ code: 'kracksi' },	{ code: 'snubby' },		{ code: 'sandy' },
 	{ code: 'shawny' },		{ code: 'daishi' },		{ code: 'akira' },		{ code: 'melissa' },	{ code: 'gracidee' }
 ]
 
@@ -231,7 +231,7 @@ function initMemberContextMenu() {
 	$contextMenu.classList.add('context_menu');
 	$contextMenu.hidden = true;
 	document.body.append($contextMenu);
-	window.addEventListener('mousedown', (e) => $contextMenu.hidden = true);
+	window.addEventListener('mousedown', () => $contextMenu.hidden = true);
 	$contextMenu.addEventListener('mousedown', (e) => e.stopPropagation());
 }
 
