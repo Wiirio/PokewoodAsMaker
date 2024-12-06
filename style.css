@@ -4,9 +4,42 @@ body {
 	font-family: sans-serif;
 	margin: 0;
 	overflow: hidden;
+
+	display: flex;
 }
+
+.parameters {
+	border-right : solid 5px;
+	display: flex;
+	flex-direction: column;
+	max-height: 100vh;
+}
+.fieldset-visible-members {
+	flex: 1;
+	overflow: auto;
+}
+.parameters > fieldset {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	border-width: 1px 0 0 0;
+}
+
+#nb_columns {
+	width: 50px;
+}
+#visible_members {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.new-member-container > input {
+	width: 150px;
+}
+
 #pw_as_container {
 	height: 100%;
+	flex: 1;
 	display: flex;
 	flex-direction: column;
 }
@@ -33,6 +66,7 @@ body {
 }
 #pw_header_editor img {
 	max-height: 100%;
+	max-width: 50%;
 }
 #grid {
 	flex: 1;
@@ -42,6 +76,10 @@ body {
 	border-top: solid 5px;
 	padding-bottom: 0.3em;
 }
+#grid[hide-equal] .member-equal {
+	display: none;
+}
+
 .pokewood-member {
 	overflow: auto;
 	display: flex;
@@ -50,9 +88,6 @@ body {
 	border-right: solid 5px;
 	padding-top: 0.2em;
 	padding-right: 0.2em;
-}
-.pokewood-member:nth-child(5n) {
-	border: none;
 }
 .pokewood-member > .editor_container {
 	flex: 1;

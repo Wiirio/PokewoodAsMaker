@@ -149,11 +149,11 @@ class CanvasControl {
 }
 
 class MemberControl {
-	#showEqual = true;
-	get ShowEqual() { return this.#showEqual; }
-	set ShowEqual(value) {
-		this.#showEqual = value;
-		this.$equal.hidden = !this.ShowEqual;
+	set Visible(value) {
+		if (value)
+			this.$control.removeAttribute('hidden');
+		else
+			this.$control.setAttribute('hidden', '');
 	}
 
 	constructor(member) {
@@ -162,6 +162,7 @@ class MemberControl {
 		this.$control = document.createElement('div');
 		this.$control.classList += 'pokewood-member';
 		this.$control.setAttribute('code', member.code);
+		this.$control.setAttribute('id', `MemberControl_${member.code}`);
 	
 		this.editorControl = new EditorControl();
 
@@ -170,18 +171,16 @@ class MemberControl {
 		this.$equal.innerText = '=';
 	
 		const $avatar = document.createElement('img');
-		$avatar.setAttribute('src', `./images/${member.code}.png`);
+		$avatar.setAttribute('src', member.imageSrc ?? `./images/${member.code}.png`);
 		$avatar.setAttribute('alt', member.code);
 
 		this.$control.append(this.editorControl.$control);
 		this.$control.append(this.$equal);
 		this.$control.append($avatar);
-
-		this.ShowEqual = this.ShowEqual;
 	}
 }
 
-members = [
+const members = [
 	{ code: 'echap' },		{ code: 'sullsun' },	{ code: 'sassa' },		{ code: 'lili' },    	{ code: 'virgil' },
 	{ code: 'wiirio' },		{ code: 'victor' }, 	{ code: 'enzoul' },		{ code: 'mako' },		{ code: 'kult' },
 	{ code: 'gladio' },		{ code: 'maxx' },		{ code: 'fox' },		{ code: 'reo' },		{ code: 'naat' },
@@ -214,16 +213,63 @@ function onImagePasted(e) {
 	}
 }
 
+function onDimensionsChanged() {
+	let nbColumns = nb_columns.value || 5;
+	grid.style.setProperty('grid-template-columns', 'repeat(' + nbColumns + ', 1fr)');
+}
+
+function onShowEqualChanged() {
+	let showEqual = show_equal.checked;
+	if (showEqual)
+		grid.removeAttribute('hide-equal');
+	else
+		grid.setAttribute('hide-equal', '');
+}
+
+function onBtnNewMemberClicked() {
+	if (!new_member_image.files) {
+		alert('Image file required');
+		return;
+	}
+
+	addMember({
+		code: new_member_name.value,
+		imageSrc: URL.createObjectURL(new_member_image.files[0])
+	});
+
+	new_member_name.value = '';
+	new_member_image.value = '';
+}
+
+function addMember(member) {
+	const chkId = `chkVisible_${member.code}`;
+	const li = document.createElement('li');
+	const checkbox = document.createElement('input');
+	checkbox.setAttribute('type', 'checkbox');
+	checkbox.setAttribute('name', chkId);
+	checkbox.setAttribute('id', chkId);
+	checkbox.checked = true;
+	let label = document.createElement('label');
+	label.setAttribute('for', chkId);
+	label.innerText = member.code;
+	li.append(checkbox);
+	li.append(label);
+	visible_members.append(li);
+
+	let memberControl = new MemberControl(member);
+	grid.append(memberControl.$control);
+
+	checkbox.addEventListener('change', (e) => memberControl.Visible = e.target.checked);
+}
+
 function init() {
 	const $headerEditor = document.getElementById('pw_header_editor');
 	$headerEditor.append(new EditorControl().$control);
 
-	const $grid = document.getElementById('grid');
-
 	initMemberContextMenu();
-
+	
 	for (let member of members)
-		$grid.append(new MemberControl(member).$control);
+		addMember(member);
 }
 
 function initMemberContextMenu() {

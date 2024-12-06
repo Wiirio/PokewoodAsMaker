@@ -6,6 +6,29 @@
 		<script src="./script.js"></script>
     </head>
     <body>
+        <div class="parameters">
+            <fieldset>
+                <legend>Layout</legend>
+                <span>
+                    <input type="checkbox" id="show_equal" checked onchange="onShowEqualChanged()">
+                    <label for="show_equal">Show "="</label>
+                </span>
+                <span>
+                    <input type="number" value="5" name="nb_columns" id="nb_columns", onchange="onDimensionsChanged()">
+                    <label for="nb_columns">Columns</label>
+                </span>
+            </fieldset>
+            <fieldset class="fieldset-visible-members">
+                <legend>People</legend>
+                <ul id="visible_members"></ul>
+            </fieldset>
+            <fieldset class="new-member-container">
+                <legend>Add a boug</legend>
+                <input type="text", name="new_member_name", id="new_member_name", placeholder="Name">
+                <input type="file", name="new_member_image", id="new_member_image">
+                <button onclick="onBtnNewMemberClicked()">+</button>
+            </fieldset>
+        </div>
         <div id="pw_as_container">
             <div id="pw_header">
                 <span>Pokéwood as</span>
